@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zama Documentation Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fff200;
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .quiz-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #000;
+    }
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+    .options label {
+      display: block;
+      background: #f7f7f7;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.3s, border 0.3s;
+    }
+    .options input {
+      display: none;
+    }
+    .options label:hover {
+      background: #fff200;
+      border-color: #000;
+    }
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #000;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #333;
+    }
+    .result {
+      text-align: center;
+    }
+    .answer-review {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .answer-review h3 {
+      margin-bottom: 10px;
+    }
+    .correct {
+      color: green;
+      font-weight: bold;
+    }
+    .wrong {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Zama Documentation Quiz</h1>
+    <div id="quiz"></div>
+    <div class="btn-container">
+      <button id="prevBtn" onclick="prevQuestion()">Previous</button>
+      <button id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What does Zama specialize in?",
+        options: ["Quantum computing", "Fully Homomorphic Encryption (FHE) solutions", "Blockchain consensus protocols only", "Machine learning frameworks"],
+        answer: 1
+      },
+      {
+        question: "Zama offers a suite of tools for building what on any blockchain?",
+        options: ["Confidential smart contracts and dApps", "Public token standards", "Off-chain computation only", "Decentralized storage"],
+        answer: 0
+      },
+      {
+        question: "Which of the following is not listed among Zama’s open-source libraries on the homepage?",
+        options: ["TFHE-rs", "Concrete", "Concrete ML", "ZeroNet"],
+        answer: 3
+      },
+      {
+        question: "Which library is the Rust implementation of TFHE?",
+        options: ["Concrete", "Concrete ML", "TFHE-rs", "ZeroNet"],
+        answer: 2
+      },
+      {
+        question: "What is ‘Concrete’ in Zama’s ecosystem?",
+        options: ["A blockchain protocol", "A Python TFHE compiler", "A front-end framework", "A data storage layer"],
+        answer: 1
+      },
+      {
+        question: "What kind of models does ‘Concrete ML’ provide?",
+        options: ["Classical neural networks (unencrypted)", "Machine learning models that operate over encrypted data", "Reinforcement learning only", "None of the above"],
+        answer: 1
+      },
+      {
+        question: "Which section on Zama’s homepage would you visit to see ‘code examples for developers’?",
+        options: ["Quick Start", "Examples", "TFHE-rs", "Litepaper"],
+        answer: 1
+      },
+      {
+        question: "What is the Zama ‘Relayer SDK Guides’ meant to help with?",
+        options: ["Setting up wallets", "Relayers integrating confidential contracts", "Designing frontend UI", "Optimizing mining"],
+        answer: 1
+      },
+      {
+        question: "True or False: Zama’s documentation homepage states that you can ‘write contracts to compute on encrypted data.’",
+        options: ["True", "False"],
+        answer: 0
+      },
+      {
+        question: "Which program(s) or resources does Zama mention supporting in, or related to, its documentation homepage?",
+        options: ["TFHE-rs and Concrete ML", "AWS and Azure", "ZeroNet and IPFS", "Solidity and Hardhat"],
+        answer: 0
+      }
+    ];
+
+    let currentQuestion = 0;
+    let userAnswers = [];
+
+    const quiz = document.getElementById("quiz");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    function loadQuestion() {
+      if (currentQuestion < quizData.length) {
+        const q = quizData[currentQuestion];
+        quiz.innerHTML = `
+          <div class="question">${q.question}</div>
+          <div class="options">
+            ${q.options.map((opt, i) => `
+              <label>
+                <input type="radio" name="question${currentQuestion}" value="${i}" ${userAnswers[currentQuestion] == i ? "checked" : ""}/> ${opt}
+              </label>
+            `).join('')}
+          </div>
+        `;
+        prevBtn.style.display = currentQuestion === 0 ? "none" : "inline-block";
+        nextBtn.innerText = currentQuestion === quizData.length - 1 ? "Submit" : "Next";
+      } else {
+        showResults();
+      }
+    }
+
+    function nextQuestion() {
+      const selected = document.querySelector(`input[name=question${currentQuestion}]:checked`);
+      if (selected) {
+        userAnswers[currentQuestion] = parseInt(selected.value);
+      }
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      let score = 0;
+      let reviewHtml = "";
+      quizData.forEach((q, i) => {
+        const correct = q.answer;
+        const user = userAnswers[i];
+        if (user === correct) score++;
+        reviewHtml += `
+          <p><strong>Q${i+1}: ${q.question}</strong><br>
+          Your answer: <span class="${user === correct ? 'correct' : 'wrong'}">${q.options[user] || 'No answer'}</span><br>
+          Correct answer: <span class="correct">${q.options[correct]}</span></p>
+        `;
+      });
+
+      quiz.innerHTML = `
+        <div class="result">
+          <h2>You scored ${score} out of ${quizData.length}</h2>
+          <div class="answer-review">
+            <h3>Review:</h3>
+            ${reviewHtml}
+          </div>
+        </div>
+      `;
+      nextBtn.style.display = "none";
+      prevBtn.style.display = "none";
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
