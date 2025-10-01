@@ -1,2 +1,3 @@
-# Zama-quiz
-It's a simple quiz for zama where you can participate to check your knowledge 
+Zama Documentation Quiz
+
+This is an interactive quiz web app inspired by the Zama documentation and styled with Zama's signature yellow-black theme.
